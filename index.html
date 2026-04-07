@@ -1,18 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>HTML + CSS</title>
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.2.0/model-viewer.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>3D Italian Restaurant Menu</title>
+    <!-- A-Frame Library -->
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="app.js"></script>
     <link rel="stylesheet" href="styles.css" />
 </head>
-
 <body>
-    <model-viewer src="module/130.glb" alt="A 3D model" style="width: 100vw; height: 90vw" camera-controls
-        touch-action="pan-y" ar></model-viewer>
-</body>
+    <a-scene loading-screen="dotsColor: white; backgroundColor: black" renderer="colorManagement: true; physicallyCorrectLights: true" cursor="rayOrigin: mouse" raycaster="objects: .clickable">
+        
+        <!-- Assets Management -->
+        <a-assets>
+            <img id="bg-texture" src="assets/italian_restaurant_bg_1775491504137.png">
+            <img id="wood-texture" src="assets/wood_texture_1775491554521.png">
+            <img id="pizza-texture" src="assets/pizza_texture_1775491638742.png">
+            <img id="bun-texture" src="assets/bun_texture_1775491745871.png">
+            
+            <mixin id="button" geometry="primitive: box; width: 0.35; height: 0.1; depth: 0.02" material="color: #5C3A21; roughness: 0.8" shadow="cast: true"></mixin>
+            <mixin id="text-style" text="align: center; color: #FFEBCD; width: 1.2; zOffset: 0.02; wrapCount: 15; font: mozillavr"></mixin>
+            
+            <!-- Plate Mixin -->
+            <mixin id="plate" geometry="primitive: cylinder; radius: 0.25; height: 0.02" material="color: #ffffff; roughness: 0.1; metalness: 0.2" shadow="receive: true; cast: true"></mixin>
+            
+            <!-- Steam Mixin (Simple particle effect using planes) -->
+            <mixin id="steam-particle" geometry="primitive: plane; width: 0.1; height: 0.1" material="src: url(https://cdn.aframe.io/images/smoke.png); transparent: true; opacity: 0.3; shader: flat" animation="property: position; to: 0 0.5 0; dur: 2000; loop: true; easing: linear" animation__fade="property: material.opacity; from: 0.3; to: 0; dur: 2000; loop: true"></mixin>
+        </a-assets>
 
+        <!-- Environment / Background -->
+        <a-sky src="#bg-texture" rotation="0 -90 0"></a-sky>
+
+        <!-- Lighting -->
+        <a-light type="ambient" color="#FFF" intensity="0.5"></a-light>
+        <a-light type="directional" color="#FFF" intensity="0.8" position="-1 2 1" castShadow="true"></a-light>
+        <a-light type="point" color="#ffedd6" intensity="0.6" position="0 2 -1"></a-light>
+        <!-- Professional Food Spotlight -->
+        <a-light id="food-spot" type="spot" color="#fff" intensity="1.5" position="0 2.5 -0.8" target="#food-showcase" angle="30" penumbra="0.5" castShadow="true"></a-light>
+
+        <!-- Camera Rig -->
+        <a-entity id="rig" position="0 1.6 1">
+            <a-camera look-controls="pointerLockEnabled: false" wasd-controls="enabled: false">
+            </a-camera>
+        </a-entity>
+
+        <!-- Wooden Table (Real Measurements: width 1.6m, depth 1.0m, height 0.75m) -->
+        <!-- Center of box Y is 0.375, so the top surface is exactly at Y=0.75 -->
+        <a-box class="collidable" material="src: #wood-texture; roughness: 0.9; color: #8B5A2B" width="1.6" height="0.75" depth="1.0" position="0 0.375 -1" shadow="receive: true; cast: true"></a-box>
+        <!-- Table Legs -->
+        <a-cylinder material="src: #wood-texture; roughness: 0.9; color: #5C3A21" radius="0.04" height="0.75" position="-0.7 0.375 -0.6" shadow="cast: true"></a-cylinder>
+        <a-cylinder material="src: #wood-texture; roughness: 0.9; color: #5C3A21" radius="0.04" height="0.75" position="0.7 0.375 -0.6" shadow="cast: true"></a-cylinder>
+        <a-cylinder material="src: #wood-texture; roughness: 0.9; color: #5C3A21" radius="0.04" height="0.75" position="-0.7 0.375 -1.4" shadow="cast: true"></a-cylinder>
+        <a-cylinder material="src: #wood-texture; roughness: 0.9; color: #5C3A21" radius="0.04" height="0.75" position="0.7 0.375 -1.4" shadow="cast: true"></a-cylinder>
+
+        <!-- Premium Menu Stand (Wooden Board) -->
+        <a-entity position="0 1.25 -1.45" rotation="-10 0 0">
+            <!-- Back Board -->
+            <a-box material="src: #wood-texture; color: #3a2010" width="1.2" height="0.6" depth="0.05" shadow="cast: true"></a-box>
+            <a-text value="ITALIAN SPECIALTIES" align="center" color="#e6bc7c" position="0 0.22 0.03" width="2.5" font="mozillavr"></a-text>
+
+            <!-- Menu Buttons Grid -->
+            <a-entity position="-0.3 0.05 0.03" class="clickable" mixin="button" menu-button="target: #item-pizza">
+                <a-text mixin="text-style" value="PIZZA"></a-text>
+            </a-entity>
+            <a-entity position="0.3 0.05 0.03" class="clickable" mixin="button" menu-button="target: #item-burger">
+                <a-text mixin="text-style" value="BURGER"></a-text>
+            </a-entity>
+            <a-entity position="-0.3 -0.12 0.03" class="clickable" mixin="button" menu-button="target: #item-pasta">
+                <a-text mixin="text-style" value="PASTA"></a-text>
+            </a-entity>
+            <a-entity position="0.3 -0.12 0.03" class="clickable" mixin="button" menu-button="target: #item-soda">
+                <a-text mixin="text-style" value="DRINK"></a-text>
+            </a-entity>
+        </a-entity>
+
+        <!-- Food Items Showcase Setup -->
+        <!-- Items are placed exactly on the table surface (Y=0.75) -->
+        <a-entity id="food-showcase" position="0 0 -0.8">
+            
+            <!-- Pizza Model -->
+            <a-entity id="item-pizza" visible="false" position="0 0 0" animation="property: rotation; to: 0 360 0; loop: true; dur: 25000; easing: linear">
+                <a-entity mixin="plate" position="0 0.75 0"></a-entity>
+                <!-- Pizza Content -->
+                <a-entity position="0 0.02 0">
+                    <a-cylinder src="#pizza-texture" radius="0.2" height="0.015" position="0 0.7575 0" material="roughness: 0.8" shadow="cast: true"></a-cylinder>
+                    <a-torus src="#pizza-texture" radius="0.19" tube="0.01" position="0 0.765 0" rotation="90 0 0" material="roughness: 0.9; color: #d4a373"></a-torus>
+                    <a-cylinder color="#fcdb03" radius="0.185" height="0.005" position="0 0.766 0" material="roughness: 0.4"></a-cylinder>
+                    <!-- Pepperoni -->
+                    <a-cylinder color="#b30000" radius="0.025" height="0.002" position="0.05 0.768 0.06"></a-cylinder>
+                    <a-cylinder color="#b30000" radius="0.025" height="0.002" position="-0.07 0.768 0.02"></a-cylinder>
+                    <a-cylinder color="#b30000" radius="0.025" height="0.002" position="0.03 0.768 -0.08"></a-cylinder>
+                </a-entity>
+                <!-- Steam -->
+                <a-entity position="0 0.8 0" mixin="steam-particle"></a-entity>
+                <a-entity position="0.1 0.8 -0.05" mixin="steam-particle" animation="delay: 500"></a-entity>
+            </a-entity>
+
+            <!-- Burger Model -->
+            <a-entity id="item-burger" visible="false" position="0 0 0" animation="property: rotation; to: 0 360 0; loop: true; dur: 25000; easing: linear">
+                <a-entity mixin="plate" position="0 0.75 0"></a-entity>
+                <!-- Burger Content -->
+                <a-entity position="0 0.02 0">
+                    <a-cylinder src="#bun-texture" radius="0.08" height="0.03" position="0 0.765 0" material="roughness: 0.9; color: #f4a460" shadow="cast: true"></a-cylinder>
+                    <a-cylinder color="#3a2010" radius="0.085" height="0.02" position="0 0.79 0" material="roughness: 1.0" shadow="cast: true"></a-cylinder>
+                    <a-box color="#ffcc00" width="0.14" height="0.005" depth="0.14" position="0 0.8025 0" rotation="0 45 0" shadow="cast: true"></a-box>
+                    <a-cylinder color="#4caf50" radius="0.09" height="0.005" position="0 0.8125 0"></a-cylinder>
+                    <a-sphere src="#bun-texture" radius="0.08" position="0 0.815 0" phi-length="360" theta-length="90" material="color: #f4a460" shadow="cast: true"></a-sphere>
+                </a-entity>
+            </a-entity>
+
+            <!-- Pasta Model (New) -->
+            <a-entity id="item-pasta" visible="false" position="0 0 0" animation="property: rotation; to: 0 360 0; loop: true; dur: 25000; easing: linear">
+                <a-entity mixin="plate" position="0 0.75 0"></a-entity>
+                <!-- Bowl -->
+                <a-cylinder color="#ffffff" radius="0.15" height="0.06" position="0 0.78 0" open-ended="true" side="double" material="roughness: 0.1"></a-cylinder>
+                <a-circle color="#ffffff" radius="0.15" position="0 0.751 0" rotation="-90 0 0"></a-circle>
+                <!-- Pasta Content -->
+                <a-torus-knot color="#f3e5ab" radius="0.08" tube="0.02" p="2" q="3" position="0 0.8 0" rotation="90 0 0" material="roughness: 0.3"></a-torus-knot>
+                <!-- Herb Garnish -->
+                <a-entity position="0 0.82 0">
+                    <a-box color="#228b22" width="0.01" height="0.01" depth="0.01" position="0.02 0 0.02"></a-box>
+                    <a-box color="#228b22" width="0.01" height="0.01" depth="0.01" position="-0.01 0 -0.02"></a-box>
+                </a-entity>
+                <!-- Steam -->
+                <a-entity position="0 0.85 0" mixin="steam-particle"></a-entity>
+            </a-entity>
+
+            <!-- Soda Model (New) -->
+            <a-entity id="item-soda" visible="false" position="0 0 0">
+                <!-- Glass -->
+                <a-cylinder color="#ffffff" radius="0.05" height="0.15" position="0 0.825 0" material="opacity: 0.3; transparent: true; roughness: 0"></a-cylinder>
+                <!-- Liquid -->
+                <a-cylinder color="#1a0a00" radius="0.045" height="0.12" position="0 0.81 0" material="opacity: 0.8; transparent: true"></a-cylinder>
+                <!-- Ice Cubes -->
+                <a-box color="#ffffff" width="0.03" height="0.03" depth="0.03" position="0 0.85 0" material="opacity: 0.5; transparent: true"></a-box>
+                <!-- Straw -->
+                <a-cylinder color="#ff0000" radius="0.005" height="0.2" position="0.02 0.88 0" rotation="0 0 15"></a-cylinder>
+            </a-entity>
+
+            <!-- Initial Text Prompt -->
+            <a-text id="prompt-text" value="Please select from the Menu Stand." align="center" color="#ffffff" position="0 0.95 0" scale="0.6 0.6 0.6" material="shader: flat"></a-text>
+
+        </a-entity>
+
+    </a-scene>
+</body>
 </html>
