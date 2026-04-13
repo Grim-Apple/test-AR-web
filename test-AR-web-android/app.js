@@ -1,6 +1,6 @@
 /**
  * component: menu-button
- * description: V2.2 Bulletproof Interaction - Works with both Tap and Fuse Cursor.
+ * description: V2.0 Interactive Menu logic for selecting food items.
  */
 if (typeof AFRAME !== 'undefined') {
     AFRAME.registerComponent('menu-button', {
@@ -11,15 +11,20 @@ if (typeof AFRAME !== 'undefined') {
             var data = this.data;
             var el = this.el;
 
-            // Handle selection (shared logic)
-            function doSelect() {
-                // Button Feedback
-                el.setAttribute('material', 'color', '#2e7d32');
-                setTimeout(function () {
-                    el.setAttribute('material', 'color', '#4CAF50');
-                }, 400);
+            // Visual states for buttons
+            var COLORS = {
+                DEFAULT: '#4CAF50',
+                ACTIVE: '#2e7d32'
+            };
 
-                // Hide prompt
+            el.addEventListener('click', function () {
+                // Button Visual Feedback
+                el.setAttribute('material', 'color', COLORS.ACTIVE);
+                setTimeout(function () {
+                    el.setAttribute('material', 'color', COLORS.DEFAULT);
+                }, 200);
+
+                // Hide the intro prompt
                 var prompt = document.getElementById('prompt-text');
                 if (prompt) prompt.setAttribute('visible', 'false');
 
@@ -32,7 +37,7 @@ if (typeof AFRAME !== 'undefined') {
                     }
                 }
 
-                // Show selected food item
+                // Show selected item with "pop" animation
                 if (data.target) {
                     data.target.setAttribute('visible', 'true');
                     data.target.setAttribute('scale', '0.1 0.1 0.1');
@@ -43,13 +48,6 @@ if (typeof AFRAME !== 'undefined') {
                         easing: 'easeOutBack'
                     });
                 }
-            }
-
-            // Bind events for both Cursor (Fuse) and direct Mouse/Touch
-            el.addEventListener('click', doSelect);
-            el.addEventListener('touchstart', function(e) {
-                e.preventDefault();
-                doSelect();
             });
         }
     });

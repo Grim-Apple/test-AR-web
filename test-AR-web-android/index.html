@@ -3,21 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Gourmet 3D Menu | V2.2 Bulletproof</title>
-    <!-- Cache Buster -->
+    <title>Gourmet 3D Menu | V2.0 Optimized</title>
+    <!-- Cache Buster on JS and CSS -->
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    <script src="app.js?v=2.2"></script>
-    <link rel="stylesheet" href="styles.css?v=2.2" />
+    <script src="app.js?v=2.0"></script>
+    <link rel="stylesheet" href="styles.css?v=2.0" />
 </head>
 <body>
-    <!-- Interaction Debugger -->
-    <div id="event-debug" style="position: fixed; bottom: 10px; right: 10px; z-index: 10002; color: lime; background: rgba(0,0,0,0.8); padding: 8px; font-family: monospace; font-size: 12px; pointer-events: none; border: 1px solid lime; border-radius: 5px;">
-        LOOK AT BUTTON TO SELECT
-    </div>
-
     <!-- Version Marker -->
-    <div style="position: fixed; top: 10px; right: 10px; z-index: 10001; color: white; background: rgba(0,0,0,0.5); padding: 5px; font-size: 10px; pointer-events: none; border-radius: 3px;">
-        V2.2 CROSSHAIR MODE
+    <div style="position: fixed; top: 5px; right: 5px; z-index: 10001; color: white; background: rgba(0,0,0,0.5); padding: 5px; font-size: 10px; pointer-events: none;">
+        V2.0 INTERACTIVE
     </div>
 
     <!-- Custom Loader Overlay -->
@@ -51,7 +46,7 @@
                     if (scene.hasLoaded) { hideLoader(); }
                     else { scene.addEventListener('loaded', hideLoader); }
                 }
-                setTimeout(hideLoader, 6000);
+                setTimeout(hideLoader, 8000); // 8s fail-safe for V2.0
             });
         })();
     </script>
@@ -60,14 +55,19 @@
         loading-screen="enabled: false"
         vr-mode-ui="enabled: false"
         device-orientation-permission-ui="enabled: false"
-        renderer="colorManagement: true; antialias: true">
+        renderer="colorManagement: true; antialias: true"
+        cursor="rayOrigin: mouse" 
+        raycaster="objects: .clickable">
         
-        <a-assets timeout="5000">
-            <!-- Tablewood is the only texture we use now for speed -->
+        <!-- Optimized Assets -->
+        <a-assets timeout="8000">
+            <img id="bg-texture" src="assets/new_restaurant_360.png">
             <img id="wood-texture" src="assets/wood_texture_1775491554521.png">
+            <img id="pizza-texture" src="assets/pizza_texture_1775491638742.png">
+            <img id="bun-texture" src="assets/bun_texture_1775491745871.png">
             
             <mixin id="btn-mixin" 
-                geometry="primitive: box; width: 0.45; height: 0.18; depth: 0.08" 
+                geometry="primitive: box; width: 0.4; height: 0.15; depth: 0.05" 
                 material="color: #4CAF50; roughness: 0.8" 
                 shadow="cast: true"></mixin>
             
@@ -76,80 +76,74 @@
                 material="color: #f0f0f0"></mixin>
         </a-assets>
 
-        <!-- Static Background (Solid Color for stability) -->
-        <a-sky color="#2c1b0e"></a-sky>
-        <a-light type="ambient" color="#fff" intensity="0.9"></a-light>
-        <a-light type="point" color="#ffedd6" intensity="0.7" position="0 2.5 0"></a-light>
+        <!-- Italian Restaurant Environment -->
+        <a-sky src="#bg-texture" rotation="0 -90 0"></a-sky>
 
-        <!-- Camera with CROSSHAIR (V2.2 Fix) -->
+        <a-light type="ambient" color="#fff" intensity="0.8"></a-light>
+        <a-light type="point" color="#ffedd6" intensity="0.6" position="0 2.5 0"></a-light>
+
         <a-entity id="rig" position="0 1.6 1.2">
-            <a-camera look-controls="pointerLockEnabled: false" wasd-controls="enabled: false">
-                <!-- The Crosshair Cursor -->
-                <a-cursor 
-                    fuse="true" 
-                    fuse-timeout="1200" 
-                    raycaster="objects: .clickable"
-                    material="color: white; shader: flat"
-                    geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
-                    animation__fusing="property: scale; from: 1 1 1; to: 0.1 0.1 0.1; dur: 1200; startEvents: fusing"
-                    animation__mouseleave="property: scale; to: 1 1 1; dur: 300; startEvents: mouseleave"></a-cursor>
-            </a-camera>
+            <a-camera look-controls="pointerLockEnabled: false" wasd-controls="enabled: false"></a-camera>
         </a-entity>
 
-        <!-- Table -->
+        <!-- Wooden Table -->
         <a-entity id="table-group" position="0 0 -0.8">
-            <a-box position="0 0.73 0" width="1.8" height="0.06" depth="1.2" material="src: #wood-texture; roughness: 0.8; repeat: 2 1.5"></a-box>
+            <a-box id="table-top" 
+                position="0 0.73 0" 
+                width="1.8" height="0.06" depth="1.2" 
+                material="src: #wood-texture; roughness: 0.8; repeat: 2 1.5" 
+                shadow="receive: true; cast: true"></a-box>
             <a-cylinder color="#382512" radius="0.04" height="0.7" position="-0.8 0.35 -0.5"></a-cylinder>
             <a-cylinder color="#382512" radius="0.04" height="0.7" position="0.8 0.35 -0.5"></a-cylinder>
             <a-cylinder color="#382512" radius="0.04" height="0.7" position="-0.8 0.35 0.5"></a-cylinder>
             <a-cylinder color="#382512" radius="0.04" height="0.7" position="0.8 0.35 0.5"></a-cylinder>
         </a-entity>
 
-        <!-- Menu Stand -->
+        <!-- Interactive Menu Stand -->
         <a-entity position="0 1.35 -1.6" rotation="-10 0 0">
             <a-plane material="color: #1a0a00; opacity: 0.95" width="1.6" height="0.9"></a-plane>
-            <a-text value="SELECT YOUR DISH" align="center" color="#e6bc7c" position="0 0.35 0.01" width="3.5"></a-text>
+            <a-text value="GOURMET 3D MENU" align="center" color="#e6bc7c" position="0 0.35 0.01" width="3.5"></a-text>
 
             <a-entity position="-0.4 0.1 0.02" class="clickable" mixin="btn-mixin" menu-button="target: #item-pizza">
-                <a-text value="PIZZA" align="center" color="#ffffff" width="2" zOffset="0.04"></a-text>
+                <a-text value="PIZZA" align="center" color="#ffffff" width="1.8" zOffset="0.03"></a-text>
             </a-entity>
             <a-entity position="0.4 0.1 0.02" class="clickable" mixin="btn-mixin" menu-button="target: #item-burger">
-                <a-text value="BURGER" align="center" color="#ffffff" width="2" zOffset="0.04"></a-text>
+                <a-text value="BURGER" align="center" color="#ffffff" width="1.8" zOffset="0.03"></a-text>
             </a-entity>
             <a-entity position="-0.4 -0.15 0.02" class="clickable" mixin="btn-mixin" menu-button="target: #item-pasta">
-                <a-text value="PASTA" align="center" color="#ffffff" width="2" zOffset="0.04"></a-text>
+                <a-text value="PASTA" align="center" color="#ffffff" width="1.8" zOffset="0.03"></a-text>
             </a-entity>
             <a-entity position="0.4 -0.15 0.02" class="clickable" mixin="btn-mixin" menu-button="target: #item-soda">
-                <a-text value="DRINK" align="center" color="#ffffff" width="2" zOffset="0.04"></a-text>
+                <a-text value="DRINK" align="center" color="#ffffff" width="1.8" zOffset="0.03"></a-text>
             </a-entity>
         </a-entity>
 
-        <!-- Showcase Area (Solid Food for performance) -->
+        <!-- Showcase Area -->
         <a-entity id="food-showcase" position="0 0.76 -0.8">
-            <a-text id="prompt-text" value="Point at a button" align="center" color="#ffffff" position="0 0.4 0" width="2.5"></a-text>
+            <a-text id="prompt-text" value="Select an item" align="center" color="#ffffff" position="0 0.4 0" width="2.5"></a-text>
 
-            <a-entity id="item-pizza" visible="false">
+            <a-entity id="item-pizza" visible="false" animation="property: rotation; to: 0 360 0; loop: true; dur: 15000; easing: linear">
                 <a-entity mixin="plate-mixin"></a-entity>
-                <a-cylinder color="#f0d060" radius="0.25" height="0.025" position="0 0.02 0"></a-cylinder>
+                <a-cylinder src="#pizza-texture" radius="0.25" height="0.025" position="0 0.02 0" material="roughness: 0.7"></a-cylinder>
             </a-entity>
 
-            <a-entity id="item-burger" visible="false">
+            <a-entity id="item-burger" visible="false" animation="property: rotation; to: 0 360 0; loop: true; dur: 15000; easing: linear">
                 <a-entity mixin="plate-mixin"></a-entity>
-                <a-cylinder color="#f4a460" radius="0.09" height="0.03" position="0 0.03 0"></a-cylinder>
+                <a-cylinder src="#bun-texture" radius="0.09" height="0.03" position="0 0.03 0" material="color: #f4a460"></a-cylinder>
                 <a-cylinder color="#3a2010" radius="0.095" height="0.025" position="0 0.055 0"></a-cylinder>
-                <a-sphere color="#f4a460" radius="0.09" position="0 0.08 0" phi-length="360" theta-length="90"></a-sphere>
+                <a-sphere src="#bun-texture" radius="0.09" position="0 0.08 0" phi-length="360" theta-length="90" material="color: #f4a460"></a-sphere>
             </a-entity>
 
-            <a-entity id="item-pasta" visible="false">
+            <a-entity id="item-pasta" visible="false" animation="property: rotation; to: 0 360 0; loop: true; dur: 15000; easing: linear">
                 <a-entity mixin="plate-mixin"></a-entity>
                 <a-cylinder color="#ffffff" radius="0.18" height="0.08" position="0 0.05 0" open-ended="true" side="double"></a-cylinder>
                 <a-torus-knot color="#f3e5ab" radius="0.08" tube="0.03" position="0 0.07 0" rotation="90 0 0"></a-torus-knot>
             </a-entity>
 
-            <a-entity id="item-soda" visible="false">
+            <a-entity id="item-soda" visible="false" animation="property: rotation; to: 0 360 0; loop: true; dur: 15000; easing: linear">
                 <a-entity mixin="plate-mixin" geometry="radius: 0.15"></a-entity>
                 <a-cylinder color="#ffffff" radius="0.06" height="0.22" position="0 0.12 0" material="opacity: 0.3; transparent: true"></a-cylinder>
-                <a-cylinder color="#1a0a00" radius="0.055" height="0.18" position="0 0.1 0"></a-cylinder>
+                <a-cylinder color="#1a0a00" radius="0.055" height="0.18" position="0 0.1 0" material="opacity: 0.8; transparent: true"></a-cylinder>
             </a-entity>
         </a-entity>
 
