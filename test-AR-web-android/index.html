@@ -31,6 +31,7 @@
             
             function updateLog(msg) {
                 if (log) log.innerHTML = "STATUS: " + msg;
+                console.log("LOG: " + msg);
             }
 
             function hideLoader() {
@@ -41,10 +42,19 @@
                 }
             }
 
-            // Show force button after 6 seconds
+            // WebGL Check
+            function checkWebGL() {
+                try {
+                    var canvas = document.createElement('canvas');
+                    var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                    return !!gl;
+                } catch(e) { return false; }
+            }
+
+            // Show force button after 5 seconds
             setTimeout(function() {
                 if (forceBtn) forceBtn.style.display = 'block';
-            }, 6000);
+            }, 5000);
 
             if (forceBtn) forceBtn.onclick = function() {
                 updateLog("FORCE STARTED");
@@ -53,6 +63,12 @@
 
             window.addEventListener('load', function() {
                 updateLog("PAGE LOADED");
+                
+                if (!checkWebGL()) {
+                    updateLog("ERROR: NO WEBGL SUPPORT");
+                    return;
+                }
+
                 var scene = document.querySelector('a-scene');
                 if (scene) {
                     updateLog("SCENE FOUND");
@@ -68,129 +84,34 @@
                 } else {
                     updateLog("ERROR: SCENE NOT FOUND");
                 }
-                setTimeout(hideLoader, 10000);
+                
+                // Final fail-safe
+                setTimeout(function() {
+                    updateLog("FAILSAFE TRIGGERED");
+                    hideLoader();
+                }, 10000);
             });
 
-            // Catch global errors
             window.onerror = function(msg, url, line) {
-                updateLog("ERR: " + msg + " at " + line);
+                updateLog("JS ERR: " + msg);
             };
         })();
     </script>
 
-    <!-- A-Frame Scene (Non-WebXR Mode) -->
+    <!-- Atomic Minimum Scene -->
     <a-scene 
         loading-screen="enabled: false"
         vr-mode-ui="enabled: false"
-        device-orientation-permission-ui="enabled: false"
-        background="color: #1a0a00"
-        renderer="colorManagement: true; antialias: true"
-        cursor="rayOrigin: mouse" 
-        raycaster="objects: .clickable">
+        stats="false">
         
-        <!-- Assets Management (Simplified - No external textures for diagnostic) -->
-        <a-assets timeout="10000">
-            <!-- Shared Mixins -->
-            <mixin id="btn-mixin" 
-                geometry="primitive: box; width: 0.4; height: 0.15; depth: 0.05" 
-                material="color: #4CAF50; roughness: 0.8" 
-                shadow="cast: true"></mixin>
-            
-            <mixin id="text-mixin" 
-                text="align: center; color: #ffffff; width: 1.8; zOffset: 0.03"></mixin>
-            
-            <mixin id="plate-mixin" 
-                geometry="primitive: cylinder; radius: 0.28; height: 0.02" 
-                material="color: #f0f0f0" 
-                shadow="receive: true; cast: true"></mixin>
-        </a-assets>
-
-        <!-- Dynamic Lighting -->
-        <a-light type="ambient" color="#fff" intensity="0.8"></a-light>
-        <a-light type="directional" color="#fff" intensity="0.6" position="-1 4 2" castShadow="true"></a-light>
-        <a-light type="point" color="#ffedd6" intensity="0.5" position="0 2 -1"></a-light>
-
-        <!-- Camera Rig -->
-        <a-entity id="rig" position="0 1.6 1.2">
-            <a-camera look-controls="pointerLockEnabled: false" wasd-controls="enabled: false">
-            </a-camera>
-        </a-entity>
-
-        <!-- Simple 3D Environment (No textures) -->
-        <a-entity id="table-group" position="0 0 -0.8">
-            <!-- Table Top -->
-            <a-box id="table-top" 
-                position="0 0.73 0" 
-                width="1.8" height="0.06" depth="1.2" 
-                color="#5d4037" 
-                shadow="receive: true; cast: true"></a-box>
-            
-            <!-- Table Legs -->
-            <a-cylinder color="#382512" radius="0.04" height="0.7" position="-0.8 0.35 -0.5"></a-cylinder>
-            <a-cylinder color="#382512" radius="0.04" height="0.7" position="0.8 0.35 -0.5"></a-cylinder>
-            <a-cylinder color="#382512" radius="0.04" height="0.7" position="-0.8 0.35 0.5"></a-cylinder>
-            <a-cylinder color="#382512" radius="0.04" height="0.7" position="0.8 0.35 0.5"></a-cylinder>
-        </a-entity>
-
-        <!-- Diagnostic Test Object -->
-        <a-box position="0 1.6 -1" color="red" scale="0.2 0.2 0.2" animation="property: rotation; to: 0 360 0; loop: true; dur: 3000"></a-box>
-
-        <!-- Floating Interactive Menu Stand -->
-        <a-entity position="0 1.35 -1.6" rotation="-10 0 0">
-            <!-- Background Panel -->
-            <a-plane material="color: #1a0a00; opacity: 0.95" width="1.6" height="0.9"></a-plane>
-            <a-text value="3D MENU (SAFE MODE)" align="center" color="#e6bc7c" position="0 0.35 0.01" width="3.5"></a-text>
-
-            <!-- Menu Buttons -->
-            <a-entity position="-0.4 0.1 0.02" class="clickable" mixin="btn-mixin" menu-button="target: #item-pizza">
-                <a-text mixin="text-mixin" value="PIZZA"></a-text>
-            </a-entity>
-            <a-entity position="0.4 0.1 0.02" class="clickable" mixin="btn-mixin" menu-button="target: #item-burger">
-                <a-text mixin="text-mixin" value="BURGER"></a-text>
-            </a-entity>
-            <a-entity position="-0.4 -0.15 0.02" class="clickable" mixin="btn-mixin" menu-button="target: #item-pasta">
-                <a-text mixin="text-mixin" value="PASTA"></a-text>
-            </a-entity>
-            <a-entity position="0.4 -0.15 0.02" class="clickable" mixin="btn-mixin" menu-button="target: #item-soda">
-                <a-text mixin="text-mixin" value="DRINK"></a-text>
-            </a-entity>
-        </a-entity>
-
-        <!-- Food Showcase Area (Solid Colors) -->
-        <a-entity id="food-showcase" position="0 0.76 -0.8">
-            
-            <!-- Selection Prompt -->
-            <a-text id="prompt-text" value="Select from the menu" align="center" color="#ffffff" position="0 0.4 0" width="2.5"></a-text>
-
-            <!-- Pizza -->
-            <a-entity id="item-pizza" visible="false">
-                <a-entity mixin="plate-mixin"></a-entity>
-                <a-cylinder color="#f0d060" radius="0.25" height="0.025" position="0 0.02 0"></a-cylinder>
-            </a-entity>
-
-            <!-- Burger -->
-            <a-entity id="item-burger" visible="false">
-                <a-entity mixin="plate-mixin"></a-entity>
-                <a-cylinder color="#f4a460" radius="0.09" height="0.03" position="0 0.03 0"></a-cylinder>
-                <a-cylinder color="#3a2010" radius="0.095" height="0.025" position="0 0.055 0"></a-cylinder>
-                <a-sphere color="#f4a460" radius="0.09" position="0 0.08 0" phi-length="360" theta-length="90"></a-sphere>
-            </a-entity>
-
-            <!-- Pasta -->
-            <a-entity id="item-pasta" visible="false">
-                <a-entity mixin="plate-mixin"></a-entity>
-                <a-cylinder color="#ffffff" radius="0.18" height="0.08" position="0 0.05 0" open-ended="true" side="double"></a-cylinder>
-                <a-torus-knot color="#f3e5ab" radius="0.08" tube="0.03" position="0 0.07 0" rotation="90 0 0"></a-torus-knot>
-            </a-entity>
-
-            <!-- Drink -->
-            <a-entity id="item-soda" visible="false">
-                <a-entity mixin="plate-mixin" geometry="radius: 0.15"></a-entity>
-                <a-cylinder color="#ffffff" radius="0.06" height="0.22" position="0 0.12 0" material="opacity: 0.3; transparent: true"></a-cylinder>
-                <a-cylinder color="#1a0a00" radius="0.055" height="0.18" position="0 0.1 0"></a-cylinder>
-            </a-entity>
-        </a-entity>
-
+        <!-- Pure White Cube on Dark Background -->
+        <a-sky color="#1a0a00"></a-sky>
+        <a-box position="0 1.5 -3" color="white" animation="property: rotation; to: 0 360 0; loop: true; dur: 3000"></a-box>
+        
+        <!-- Basic Lighting -->
+        <a-light type="ambient" color="#fff"></a-light>
+        <a-light type="point" position="1 2 1"></a-light>
+        
     </a-scene>
 </body>
 </html>
