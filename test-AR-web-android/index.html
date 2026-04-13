@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Gourmet 3D Experience | Android</title>
-    <!-- A-Frame Library (Updated to 1.6.0 for better mobile support) -->
-    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <!-- A-Frame Library (Downgraded to 1.5.0 for better device compatibility) -->
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="app.js"></script>
     <link rel="stylesheet" href="styles.css" />
 </head>
@@ -30,10 +30,10 @@
                 }
             }
 
-            // Show force button after 10 seconds
+            // Show force button after 8 seconds
             setTimeout(function() {
                 if (forceBtn) forceBtn.style.display = 'block';
-            }, 10000);
+            }, 8000);
 
             if (forceBtn) forceBtn.onclick = hideLoader;
 
@@ -45,7 +45,7 @@
                     else { scene.addEventListener('loaded', hideLoader); }
                 }
                 // Backup window load exit
-                setTimeout(hideLoader, 12000);
+                setTimeout(hideLoader, 10000);
             });
         })();
     </script>
@@ -53,16 +53,16 @@
     <!-- A-Frame Scene -->
     <a-scene 
         loading-screen="enabled: false" 
-        renderer="colorManagement: true; antialias: true; logarithmicDepthBuffer: true"
+        renderer="colorManagement: true; antialias: true"
         cursor="rayOrigin: mouse" 
         raycaster="objects: .clickable">
         
         <!-- Assets Management -->
         <a-assets timeout="10000">
-            <img id="bg-texture" src="assets/new_restaurant_360.png" crossorigin="anonymous">
-            <img id="wood-texture" src="assets/wood_texture_1775491554521.png" crossorigin="anonymous">
-            <img id="pizza-texture" src="assets/pizza_texture_1775491638742.png" crossorigin="anonymous">
-            <img id="bun-texture" src="assets/bun_texture_1775491745871.png" crossorigin="anonymous">
+            <img id="bg-texture" src="assets/new_restaurant_360.png">
+            <img id="wood-texture" src="assets/wood_texture_1775491554521.png">
+            <img id="pizza-texture" src="assets/pizza_texture_1775491638742.png">
+            <img id="bun-texture" src="assets/bun_texture_1775491745871.png">
             
             <!-- Shared Mixins -->
             <mixin id="btn-mixin" 
@@ -81,6 +81,9 @@
 
         <!-- Immersive 360 Environment -->
         <a-sky src="#bg-texture" rotation="0 -90 0"></a-sky>
+
+        <!-- Rendering Test Object -->
+        <a-box position="0 1.6 -1" color="red" scale="0.2 0.2 0.2"></a-box>
 
         <!-- Dynamic Lighting -->
         <a-light type="ambient" color="#fff" intensity="0.7"></a-light>
