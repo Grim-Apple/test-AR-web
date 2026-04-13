@@ -70,22 +70,11 @@ if (typeof AFRAME !== 'undefined') {
             });
         }
     });
-}
 
-/**
- * Loader hiding logic is now primarily handled by the inline script in index.html
- * to ensure it runs even if this script fails registration.
- * This block acts as a secondary backup.
- */
-document.addEventListener('DOMContentLoaded', function() {
-    var scene = document.querySelector('a-scene');
-    if (scene) {
-        scene.addEventListener('loaded', function() {
-            var loader = document.getElementById('custom-loader');
-            if (loader && !loader.classList.contains('hidden')) {
-                loader.classList.add('hidden');
-                setTimeout(function() { loader.style.display = 'none'; }, 600);
-            }
-        });
-    }
-});
+} else {
+    // If AFRAME is missing, log it to the on-screen debug log
+    window.addEventListener('load', function() {
+        var log = document.getElementById('debug-log');
+        if (log) log.innerHTML = "STATUS: ERROR - AFRAME NOT FOUND";
+    });
+}
