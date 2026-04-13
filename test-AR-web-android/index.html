@@ -14,7 +14,41 @@
     <div id="custom-loader">
         <h1>GOURMET 3D MENU</h1>
         <div class="spinner"></div>
+        <button id="force-start" style="display: none; margin-top: 20px; padding: 10px 20px; background: #e6bc7c; border: none; border-radius: 5px; color: #1a0a00; font-weight: 800; cursor: pointer;">FORCE START</button>
     </div>
+
+    <!-- Inline script to ensure loader hides even if app.js has errors -->
+    <script>
+        (function() {
+            var loader = document.getElementById('custom-loader');
+            var forceBtn = document.getElementById('force-start');
+            
+            function hideLoader() {
+                if (loader && !loader.classList.contains('hidden')) {
+                    loader.classList.add('hidden');
+                    setTimeout(function() { loader.style.display = 'none'; }, 600);
+                }
+            }
+
+            // Show force button after 10 seconds
+            setTimeout(function() {
+                if (forceBtn) forceBtn.style.display = 'block';
+            }, 10000);
+
+            if (forceBtn) forceBtn.onclick = hideLoader;
+
+            // Simple check for A-Frame
+            window.addEventListener('load', function() {
+                var scene = document.querySelector('a-scene');
+                if (scene) {
+                    if (scene.hasLoaded) { hideLoader(); }
+                    else { scene.addEventListener('loaded', hideLoader); }
+                }
+                // Backup window load exit
+                setTimeout(hideLoader, 12000);
+            });
+        })();
+    </script>
 
     <!-- A-Frame Scene -->
     <a-scene 
