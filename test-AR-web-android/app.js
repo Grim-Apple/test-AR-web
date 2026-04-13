@@ -73,15 +73,36 @@ AFRAME.registerComponent('menu-button', {
 // Hide the custom loader once the A-Frame scene is fully initialized
 document.addEventListener('DOMContentLoaded', () => {
     const scene = document.querySelector('a-scene');
-    if (scene) {
-        scene.addEventListener('loaded', () => {
-            const loader = document.getElementById('custom-loader');
-            if (loader) {
-                // Delay slightly for smooth transition
-                setTimeout(() => {
-                    loader.classList.add('hidden');
-                }, 500);
-            }
-        });
+    const loader = document.getElementById('custom-loader');
+    
+    if (!scene || !loader) return;
+
+    function hideLoader() {
+        if (loader.classList.contains('hidden')) return;
+        
+        console.log("Hiding loader...");
+        loader.classList.add('hidden');
+        
+        // Remove from DOM entirely after transition to ensure no click blocking
+        setTimeout(() => {
+            loader.style.display = 'none';
+        }, 600);
     }
+
+    // 1. Listen for A-Frame's loaded event
+    scene.addEventListener('loaded', hideLoader);
+
+    // 2. Backup check: if the scene already loaded before this script ran
+    if (scene.hasLoaded) {
+        hideLoader();
+    }
+
+    // 3. Fail-safe: Hide after 7 seconds no matter what
+    // (increased from 5 to give assets a fair chance on slow connections)
+    setTimeout(() => {
+        if (!loader.classList.contains('hidden')) {
+            console.warn("Loader fail-safe triggered.");
+            hideLoader();
+        }
+    }, 7000);
 });
