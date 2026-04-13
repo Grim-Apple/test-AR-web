@@ -6,6 +6,18 @@ body {
     overflow: hidden;
     background-color: #1a0a00;
     font-family: 'Outfit', sans-serif;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* Force A-Frame to be visible */
+a-scene, canvas.a-canvas {
+    display: block !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 /* A-Frame specific UI overrides if needed */

@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Gourmet 3D Experience | Android</title>
-    <!-- A-Frame Library (Downgraded to 1.5.0 for better device compatibility) -->
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <!-- A-Frame Library (Switching to 1.4.2 for maximum mobile stability) -->
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="app.js"></script>
     <link rel="stylesheet" href="styles.css" />
 </head>
@@ -38,7 +38,7 @@
                 if (loader && !loader.classList.contains('hidden')) {
                     loader.classList.add('hidden');
                     setTimeout(function() { loader.style.display = 'none'; }, 600);
-                    updateLog("LOADER HIDDEN");
+                    updateLog("VISIBLE: BLUE SKY?");
                 }
             }
 
@@ -65,7 +65,7 @@
                 updateLog("PAGE LOADED");
                 
                 if (!checkWebGL()) {
-                    updateLog("ERROR: NO WEBGL SUPPORT");
+                    updateLog("ERR: NO WEBGL");
                     return;
                 }
 
@@ -73,44 +73,45 @@
                 if (scene) {
                     updateLog("SCENE FOUND");
                     if (scene.hasLoaded) { 
-                        updateLog("SCENE ALREADY LOADED");
+                        updateLog("READY (AUTO)");
                         hideLoader(); 
                     } else { 
                         scene.addEventListener('loaded', function() {
-                            updateLog("SCENE LOADED EVENT");
+                            updateLog("READY (EVENT)");
                             hideLoader();
                         });
                     }
                 } else {
-                    updateLog("ERROR: SCENE NOT FOUND");
+                    updateLog("ERR: NO SCENE");
                 }
                 
                 // Final fail-safe
                 setTimeout(function() {
-                    updateLog("FAILSAFE TRIGGERED");
+                    updateLog("TIMEOUT EXIT");
                     hideLoader();
                 }, 10000);
             });
 
-            window.onerror = function(msg, url, line) {
+            window.onerror = function(msg) {
                 updateLog("JS ERR: " + msg);
             };
         })();
     </script>
 
-    <!-- Atomic Minimum Scene -->
+    <!-- Atomic Minimum Scene (Now with Blue Sky) -->
     <a-scene 
         loading-screen="enabled: false"
-        vr-mode-ui="enabled: false"
-        stats="false">
+        vr-mode-ui="enabled: false">
         
-        <!-- Pure White Cube on Dark Background -->
-        <a-sky color="#1a0a00"></a-sky>
-        <a-box position="0 1.5 -3" color="white" animation="property: rotation; to: 0 360 0; loop: true; dur: 3000"></a-box>
+        <!-- Bright Blue Sky (If you see blue, A-Frame is WORKING) -->
+        <a-sky color="#87CEEB"></a-sky>
         
-        <!-- Basic Lighting -->
-        <a-light type="ambient" color="#fff"></a-light>
-        <a-light type="point" position="1 2 1"></a-light>
+        <!-- White Box right in front of the camera (position at z=-1) -->
+        <a-box position="0 1.6 -1" color="white" animation="property: rotation; to: 0 360 0; loop: true; dur: 3000"></a-box>
+        
+        <!-- Constant Lighting -->
+        <a-light type="ambient" color="#ffffff"></a-light>
+        <a-light type="point" intensity="1" position="1 2 1"></a-light>
         
     </a-scene>
 </body>
