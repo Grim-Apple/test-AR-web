@@ -1,6 +1,6 @@
 /**
  * component: menu-button
- * description: V2.0 Interactive Menu logic for selecting food items.
+ * description: Handles the interactive menu buttons (Solid Mode version).
  */
 if (typeof AFRAME !== 'undefined') {
     AFRAME.registerComponent('menu-button', {
@@ -11,24 +11,24 @@ if (typeof AFRAME !== 'undefined') {
             var data = this.data;
             var el = this.el;
 
-            // Visual states for buttons
+            // Visual states for solid buttons
             var COLORS = {
                 DEFAULT: '#4CAF50',
                 ACTIVE: '#2e7d32'
             };
 
             el.addEventListener('click', function () {
-                // Button Visual Feedback
+                // Button feedback
                 el.setAttribute('material', 'color', COLORS.ACTIVE);
                 setTimeout(function () {
                     el.setAttribute('material', 'color', COLORS.DEFAULT);
                 }, 200);
 
-                // Hide the intro prompt
+                // Hide prompt
                 var prompt = document.getElementById('prompt-text');
                 if (prompt) prompt.setAttribute('visible', 'false');
 
-                // Hide all other showcase items
+                // Hide all showcase items
                 var showcase = document.getElementById('food-showcase');
                 if (showcase) {
                     var items = showcase.querySelectorAll('[id^="item-"]');
@@ -37,7 +37,7 @@ if (typeof AFRAME !== 'undefined') {
                     }
                 }
 
-                // Show selected item with "pop" animation
+                // Show target
                 if (data.target) {
                     data.target.setAttribute('visible', 'true');
                     data.target.setAttribute('scale', '0.1 0.1 0.1');
