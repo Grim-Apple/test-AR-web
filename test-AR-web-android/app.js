@@ -1,6 +1,6 @@
 /**
  * component: menu-button
- * description: V2.1 Interaction Fix - Multi-event support (Click, Touch, Mouse)
+ * description: V2.2 Bulletproof Interaction - Works with both Tap and Fuse Cursor.
  */
 if (typeof AFRAME !== 'undefined') {
     AFRAME.registerComponent('menu-button', {
@@ -10,24 +10,16 @@ if (typeof AFRAME !== 'undefined') {
         init: function () {
             var data = this.data;
             var el = this.el;
-            var debugBox = document.getElementById('event-debug');
 
-            function updateDebug(msg) {
-                if (debugBox) debugBox.innerHTML = "LAST EVENT: " + msg;
-                console.log("BUTTON EVENT: " + msg);
-            }
-
-            // Function to handle the actual item swapping
-            function handlePress() {
-                updateDebug("BUTTON PRESSED");
-
-                // Immediate Visual Feedback (Darker Green)
+            // Handle selection (shared logic)
+            function doSelect() {
+                // Button Feedback
                 el.setAttribute('material', 'color', '#2e7d32');
                 setTimeout(function () {
                     el.setAttribute('material', 'color', '#4CAF50');
-                }, 200);
+                }, 400);
 
-                // Hide intro prompt
+                // Hide prompt
                 var prompt = document.getElementById('prompt-text');
                 if (prompt) prompt.setAttribute('visible', 'false');
 
@@ -40,7 +32,7 @@ if (typeof AFRAME !== 'undefined') {
                     }
                 }
 
-                // Show selected item with "pop" effect
+                // Show selected food item
                 if (data.target) {
                     data.target.setAttribute('visible', 'true');
                     data.target.setAttribute('scale', '0.1 0.1 0.1');
@@ -53,14 +45,12 @@ if (typeof AFRAME !== 'undefined') {
                 }
             }
 
-            // LISTEN TO EVERY POSSIBLE INTERACTION
-            el.addEventListener('click', function() { updateDebug("CLICK"); handlePress(); });
-            el.addEventListener('touchstart', function(e) { 
-                e.preventDefault(); // Stop double-firing
-                updateDebug("TOUCHSTART"); 
-                handlePress(); 
+            // Bind events for both Cursor (Fuse) and direct Mouse/Touch
+            el.addEventListener('click', doSelect);
+            el.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                doSelect();
             });
-            el.addEventListener('mousedown', function() { updateDebug("MOUSEDOWN"); handlePress(); });
         }
     });
 }
