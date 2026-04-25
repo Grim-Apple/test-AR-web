@@ -1,18 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>HTML + CSS</title>
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.2.0/model-viewer.min.js"></script>
+    <title>Dynamic 3D AR Menu</title>
+    
+    <!-- Import Google Fonts for modern typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Link to external styles -->
     <link rel="stylesheet" href="styles.css" />
+    
+    <!-- Import the model-viewer component -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.2.0/model-viewer.min.js"></script>
 </head>
-
 <body>
-    <model-viewer src="module/130.glb" alt="A 3D model" style="width: 100vw; height: 90vw" camera-controls
-        touch-action="pan-y" ar></model-viewer>
-</body>
+    
+    <!-- Full Screen AR Viewer -->
+    <model-viewer id="ar-viewer" 
+        alt="A 3D model" 
+        camera-controls 
+        touch-action="pan-y" 
+        ar 
+        ar-modes="webxr scene-viewer quick-look"
+        shadow-intensity="1.5"
+        shadow-softness="1">
+    </model-viewer>
 
+    <!-- UI Panel (Glassmorphism) -->
+    <div class="ui-panel">
+        <h3>Select a Dish</h3>
+        <div class="custom-select-wrapper">
+            <select id="model-selector">
+                <option value="">Loading models...</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loader" class="loader-container">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- App Logic -->
+    <script src="app.js"></script>
+</body>
 </html>
