@@ -31,14 +31,14 @@ model-viewer {
     background: var(--panel-bg);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    padding: 15px 25px;
+    padding: 20px 30px;
     border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 20px;
     z-index: 10;
     width: 90%;
     max-width: 400px;
@@ -127,7 +127,7 @@ model-viewer::part(default-ar-button) {
     font-family: var(--font-family);
     font-weight: 600;
     position: absolute;
-    bottom: 120px; /* Place it above our UI panel */
+    bottom: 180px; /* Place it above our UI panel */
     left: 50%;
     transform: translateX(-50%);
     box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);
