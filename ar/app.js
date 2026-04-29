@@ -8,9 +8,46 @@ document.addEventListener("DOMContentLoaded", async () => {
     const hideLoader = () => { loader.style.display = "none"; };
 
     try {
-        // Fetch the list of models dynamically
-        const response = await fetch("module/models.json");
-        const models = await response.json();
+        // Fetch the directory listing of the module folder
+        const response = await fetch("module/");
+        if (!response.ok) {
+            throw new Error("Failed to fetch module directory. Ensure your server allows directory listing.");
+        }
+        const htmlText = await response.text();
+
+        // Parse HTML to extract .glb files
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlText, 'text/html');
+        const links = Array.from(doc.querySelectorAll('a'));
+        
+        // Find .usdz files to pair them if they exist
+        const usdzFiles = links
+            .map(l => l.getAttribute('href'))
+            .filter(href => href && href.toLowerCase().endsWith('.usdz'))
+            .map(href => decodeURIComponent(href.split('/').pop()));
+
+        const models = [];
+        links.forEach(link => {
+            let href = link.getAttribute('href');
+            if (href && href.toLowerCase().endsWith('.glb')) {
+                // Extract filename
+                const parts = href.split('/');
+                let filename = decodeURIComponent(parts[parts.length - 1]);
+                
+                // Format name
+                let name = filename.replace(/\.glb$/i, '');
+                
+                // Check if matching usdz exists
+                let usdzFilename = name + '.usdz';
+                let hasUsdz = usdzFiles.includes(usdzFilename);
+                
+                models.push({
+                    name: name,
+                    glb: `module/${filename}`,
+                    usdz: hasUsdz ? `module/${usdzFilename}` : null
+                });
+            }
+        });
 
         // Clear loading text in select
         selector.innerHTML = "";
