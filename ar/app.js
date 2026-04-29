@@ -37,6 +37,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             
             if (selected.usdz) {
                 viewer.setAttribute("ios-src", selected.usdz); // For iOS Quick Look
+            } else {
+                viewer.removeAttribute("ios-src");
             }
         };
 
