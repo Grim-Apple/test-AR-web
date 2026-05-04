@@ -13,5 +13,10 @@
     "id": "3",
     "name": "noodle",
     "glb": "module/noodle.glb"
+  },
+  {
+    "id": "4",
+    "name": "Pepperoni pizza",
+    "glb": "module/Pepperoni pizza.glb"
   }
 ]
