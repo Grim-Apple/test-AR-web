@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const loader = document.getElementById("loader");
 
     let allModels = [];
-    let currentCategory = "Pizza";
+    let currentCategory = "All";
 
     // Show loading spinner
     const showLoader = () => { loader.style.display = "flex"; };
@@ -15,18 +15,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     const categoryIcons = {
         "Pizza": "🍕",
         "Pasta": "🍝",
-        "Pastries": "🥐"
+        "Pastries": "🥐",
+        "All": "🍽️"
     };
 
     const renderModels = (category) => {
         menuContainer.innerHTML = "";
         
-        const filteredModels = allModels.filter(m => m.category === category);
+        const filteredModels = category === "All" 
+            ? allModels 
+            : allModels.filter(m => m.category === category);
 
         filteredModels.forEach((model) => {
             const item = document.createElement("div");
             item.className = "menu-item";
-            if (viewer.src && viewer.src.includes(model.glb)) {
+            if (viewer.src.includes(model.glb)) {
                 item.classList.add("selected");
             }
 
@@ -64,33 +67,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         hideLoader();
     });
 
-    // Handle model loading errors
-    viewer.addEventListener('error', (error) => {
-        console.error("Model viewer error:", error);
-        hideLoader();
-        menuContainer.innerHTML += `<p style='color: #ff4444; padding: 10px; font-size: 0.8rem;'>Error loading 3D model. Please check the file path.</p>`;
-    });
-
     try {
         const response = await fetch("module/models.json");
-        if (!response.ok) {
-            throw new Error(`Failed to fetch models.json (Status: ${response.status})`);
-        }
         allModels = await response.json();
 
-        if (!allModels || allModels.length === 0) {
-            menuContainer.innerHTML = "<p style='color: white; padding: 20px;'>No models found in database</p>";
+        if (allModels.length === 0) {
+            menuContainer.innerHTML = "<p style='color: white; padding: 20px;'>No models available</p>";
             hideLoader();
             return;
         }
 
-        // Render initial view (Pizza)
-        renderModels("Pizza");
+        // Render initial view
+        renderModels("All");
 
-        // Load the first Pizza model by default
-        const defaultModel = allModels.find(m => m.category === "Pizza");
-        if (defaultModel) {
-            loadModel(defaultModel);
+        // Load the first model by default
+        if (allModels.length > 0) {
+            loadModel(allModels[0]);
         }
 
         // Setup category filter listeners
@@ -108,7 +100,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     } catch (error) {
         console.error("Error loading models:", error);
-        menuContainer.innerHTML = `<p style='color: white; padding: 20px;'>Error: ${error.message}<br><small>Please check if module/models.json exists and is valid JSON.</small></p>`;
+        menuContainer.innerHTML = "<p style='color: white; padding: 20px;'>Error loading models</p>";
         hideLoader();
     }
 });

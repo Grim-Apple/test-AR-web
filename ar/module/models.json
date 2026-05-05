@@ -1,1 +1,26 @@
-[{"id":"1","name":"Classic Pasta","category":"Pasta","glb":"module/130.glb"},{"id":"2","name":"French Croissant","category":"Pastries","glb":"module/Croissant 10.glb"},{"id":"3","name":"Spaghetti Noodles","category":"Pasta","glb":"module/noodle.glb"},{"id":"4","name":"Italian Pizza","category":"Pizza","glb":"module/pizza .glb"}]
+[
+  {
+    "id": "1",
+    "name": "Classic Pasta",
+    "category": "Pasta",
+    "glb": "module/130.glb"
+  },
+  {
+    "id": "2",
+    "name": "French Croissant",
+    "category": "Pastries",
+    "glb": "module/Croissant 10.glb"
+  },
+  {
+    "id": "3",
+    "name": "Spaghetti Noodles",
+    "category": "Pasta",
+    "glb": "module/noodle.glb"
+  },
+  {
+    "id": "4",
+    "name": "Italian Pizza",
+    "category": "Pizza",
+    "glb": "module/pizza .glb"
+  }
+]
