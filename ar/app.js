@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const loader = document.getElementById("loader");
 
     let allModels = [];
-    let currentCategory = "All";
+    let currentCategory = "Pizza";
 
     // Show loading spinner
     const showLoader = () => { loader.style.display = "flex"; };
@@ -15,16 +15,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     const categoryIcons = {
         "Pizza": "🍕",
         "Pasta": "🍝",
-        "Pastries": "🥐",
-        "All": "🍽️"
+        "Pastries": "🥐"
     };
 
     const renderModels = (category) => {
         menuContainer.innerHTML = "";
         
-        const filteredModels = category === "All" 
-            ? allModels 
-            : allModels.filter(m => m.category === category);
+        const filteredModels = allModels.filter(m => m.category === category);
 
         filteredModels.forEach((model) => {
             const item = document.createElement("div");
@@ -68,7 +65,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     try {
-        const response = await fetch("module/models.json");
+        const response = await fetch(`module/models.json?v=${new Date().getTime()}`);
         allModels = await response.json();
 
         if (allModels.length === 0) {
@@ -77,12 +74,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        // Render initial view
-        renderModels("All");
+        // Render initial view (Pizza)
+        renderModels("Pizza");
 
-        // Load the first model by default
-        if (allModels.length > 0) {
-            loadModel(allModels[0]);
+        // Load the first Pizza model by default
+        const defaultModel = allModels.find(m => m.category === "Pizza");
+        if (defaultModel) {
+            loadModel(defaultModel);
         }
 
         // Setup category filter listeners
