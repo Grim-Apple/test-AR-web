@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         filteredModels.forEach((model) => {
             const item = document.createElement("div");
             item.className = "menu-item";
-            if (viewer.src.includes(model.glb)) {
+            if (viewer.src && viewer.src.includes(model.glb)) {
                 item.classList.add("selected");
             }
 
