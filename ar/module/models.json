@@ -1,22 +1,26 @@
 [
   {
     "id": "1",
-    "name": "130",
+    "name": "Classic Pasta",
+    "category": "Pasta",
     "glb": "module/130.glb"
   },
   {
     "id": "2",
-    "name": "Croissant 10",
+    "name": "French Croissant",
+    "category": "Pastries",
     "glb": "module/Croissant 10.glb"
   },
   {
     "id": "3",
-    "name": "noodle",
+    "name": "Spaghetti Noodles",
+    "category": "Pasta",
     "glb": "module/noodle.glb"
   },
   {
     "id": "4",
-    "name": "pizza ",
+    "name": "Italian Pizza",
+    "category": "Pizza",
     "glb": "module/pizza .glb"
   }
 ]

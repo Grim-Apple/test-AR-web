@@ -29,13 +29,22 @@
         </button>
     </model-viewer>
 
-    <!-- UI Panel (Glassmorphism) -->
+    <!-- UI Panel (Premium Restaurant Vibe) -->
     <div class="ui-panel">
-        <h3>Select a Dish</h3>
-        <div class="custom-select-wrapper">
-            <select id="model-selector">
-                <option value="">Loading models...</option>
-            </select>
+        <div class="panel-header">
+            <h3>Gourmet AR Menu</h3>
+            <p>Select a dish to view in your space</p>
+        </div>
+
+        <div class="categories" id="category-filters">
+            <button class="category-btn active" data-category="All">All</button>
+            <button class="category-btn" data-category="Pizza">Pizza</button>
+            <button class="category-btn" data-category="Pasta">Pasta</button>
+            <button class="category-btn" data-category="Pastries">Pastries</button>
+        </div>
+
+        <div class="menu-container" id="menu-items">
+            <!-- Items will be dynamically injected here -->
         </div>
     </div>
 

@@ -27,68 +27,162 @@ model-viewer {
 /* Glassmorphism UI panel */
 .ui-panel {
     position: absolute;
-    top: 15%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--panel-bg);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    padding: 15px 25px;
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(18, 18, 18, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 20px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 10px;
+    gap: 15px;
     z-index: 10;
-    width: 90%;
-    max-width: 400px;
+    border-radius: 24px 24px 0 0;
+    animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.ui-panel h3 {
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.panel-header {
+    padding: 0 20px;
+    text-align: left;
+}
+
+.panel-header h3 {
     margin: 0;
-    font-size: 1rem;
+    font-size: 1.4rem;
     color: var(--text-color);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.panel-header p {
+    margin: 4px 0 0;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Categories Filter */
+.categories {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 0 20px 5px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.categories::-webkit-scrollbar {
+    display: none;
+}
+
+.category-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
     font-weight: 500;
-    letter-spacing: 0.5px;
-}
-
-.custom-select-wrapper {
-    position: relative;
-    width: 100%;
-}
-
-select {
-    width: 100%;
-    padding: 12px 16px;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #333;
-    background-color: #fff;
-    border: none;
-    border-radius: 8px;
-    appearance: none;
-    -webkit-appearance: none;
+    white-space: nowrap;
     cursor: pointer;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
 }
 
-select:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.5);
+.category-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
 }
 
-.custom-select-wrapper::after {
-    content: "▼";
+/* Menu Items Container */
+.menu-container {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    padding: 5px 20px 20px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.menu-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* Item Card */
+.menu-item {
+    min-width: 140px;
+    height: 180px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-item::before {
+    content: '';
     position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    color: #666;
-    font-size: 0.8rem;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent 40%, rgba(0, 0, 0, 0.6));
+    z-index: 1;
+}
+
+.menu-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-5px);
+    border-color: rgba(255, 152, 0, 0.5);
+}
+
+.menu-item.selected {
+    border: 2px solid var(--primary-color);
+    background: rgba(255, 152, 0, 0.1);
+}
+
+.item-icon {
+    font-size: 2.5rem;
+    margin-bottom: auto;
+    margin-top: 10px;
+    z-index: 2;
+    transition: transform 0.3s ease;
+}
+
+.menu-item:hover .item-icon {
+    transform: scale(1.2) rotate(5deg);
+}
+
+.item-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: white;
+    text-align: center;
+    z-index: 2;
+    margin-bottom: 4px;
+}
+
+.item-category {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    z-index: 2;
 }
 
 /* Loader Animation */
