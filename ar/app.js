@@ -65,11 +65,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     try {
-        const response = await fetch(`module/models.json?v=${new Date().getTime()}`);
+        const response = await fetch("module/models.json");
+        if (!response.ok) {
+            throw new Error(`Failed to fetch models.json (Status: ${response.status})`);
+        }
         allModels = await response.json();
 
-        if (allModels.length === 0) {
-            menuContainer.innerHTML = "<p style='color: white; padding: 20px;'>No models available</p>";
+        if (!allModels || allModels.length === 0) {
+            menuContainer.innerHTML = "<p style='color: white; padding: 20px;'>No models found in database</p>";
             hideLoader();
             return;
         }
@@ -98,7 +101,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     } catch (error) {
         console.error("Error loading models:", error);
-        menuContainer.innerHTML = "<p style='color: white; padding: 20px;'>Error loading models</p>";
+        menuContainer.innerHTML = `<p style='color: white; padding: 20px;'>Error: ${error.message}<br><small>Please check if module/models.json exists and is valid JSON.</small></p>`;
         hideLoader();
     }
 });
