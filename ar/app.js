@@ -1,106 +1,63 @@
 document.addEventListener("DOMContentLoaded", async () => {
-    const menuContainer = document.getElementById("menu-items");
-    const categoryFilters = document.getElementById("category-filters");
+    const selector = document.getElementById("model-selector");
     const viewer = document.getElementById("ar-viewer");
     const loader = document.getElementById("loader");
-
-    let allModels = [];
-    let currentCategory = "All";
 
     // Show loading spinner
     const showLoader = () => { loader.style.display = "flex"; };
     const hideLoader = () => { loader.style.display = "none"; };
 
-    // Map categories to icons
-    const categoryIcons = {
-        "Pizza": "🍕",
-        "Pasta": "🍝",
-        "Pastries": "🥐",
-        "All": "🍽️"
-    };
-
-    const renderModels = (category) => {
-        menuContainer.innerHTML = "";
-        
-        const filteredModels = category === "All" 
-            ? allModels 
-            : allModels.filter(m => m.category === category);
-
-        filteredModels.forEach((model) => {
-            const item = document.createElement("div");
-            item.className = "menu-item";
-            if (viewer.src.includes(model.glb)) {
-                item.classList.add("selected");
-            }
-
-            item.innerHTML = `
-                <div class="item-icon">${categoryIcons[model.category] || "🍽️"}</div>
-                <div class="item-name">${model.name}</div>
-                <div class="item-category">${model.category}</div>
-            `;
-
-            item.addEventListener("click", () => {
-                // Update selection UI
-                document.querySelectorAll(".menu-item").forEach(el => el.classList.remove("selected"));
-                item.classList.add("selected");
-                
-                loadModel(model);
-            });
-
-            menuContainer.appendChild(item);
-        });
-    };
-
-    const loadModel = (model) => {
-        showLoader();
-        viewer.src = model.glb;
-        
-        if (model.usdz) {
-            viewer.setAttribute("ios-src", model.usdz);
-        } else {
-            viewer.removeAttribute("ios-src");
-        }
-    };
-
-    // Hide loader when the model finishes loading
-    viewer.addEventListener('load', () => {
-        hideLoader();
-    });
-
     try {
+        // Fetch the list of models dynamically
         const response = await fetch("module/models.json");
-        allModels = await response.json();
+        const models = await response.json();
 
-        if (allModels.length === 0) {
-            menuContainer.innerHTML = "<p style='color: white; padding: 20px;'>No models available</p>";
+        // Clear loading text in select
+        selector.innerHTML = "";
+
+        if (models.length === 0) {
+            selector.innerHTML = "<option>No models available</option>";
             hideLoader();
             return;
         }
 
-        // Render initial view
-        renderModels("All");
+        // Populate the dropdown
+        models.forEach((model, index) => {
+            const option = document.createElement("option");
+            option.value = index;
+            option.textContent = model.name;
+            selector.appendChild(option);
+        });
+
+        // Function to load the selected model
+        const loadModel = (index) => {
+            showLoader();
+            const selected = models[index];
+            viewer.src = selected.glb; // For Web, Android
+            
+            if (selected.usdz) {
+                viewer.setAttribute("ios-src", selected.usdz); // For iOS Quick Look
+            } else {
+                viewer.removeAttribute("ios-src");
+            }
+        };
+
+        // Hide loader when the model finishes loading
+        viewer.addEventListener('load', () => {
+            hideLoader();
+        });
 
         // Load the first model by default
-        if (allModels.length > 0) {
-            loadModel(allModels[0]);
-        }
+        loadModel(0);
 
-        // Setup category filter listeners
-        categoryFilters.addEventListener("click", (e) => {
-            const btn = e.target.closest(".category-btn");
-            if (!btn) return;
-
-            // Update active button UI
-            document.querySelectorAll(".category-btn").forEach(el => el.classList.remove("active"));
-            btn.classList.add("active");
-
-            currentCategory = btn.getAttribute("data-category");
-            renderModels(currentCategory);
+        // Listen for user selection changes
+        selector.addEventListener("change", (e) => {
+            loadModel(e.target.value);
         });
 
     } catch (error) {
         console.error("Error loading models:", error);
-        menuContainer.innerHTML = "<p style='color: white; padding: 20px;'>Error loading models</p>";
+        selector.innerHTML = "<option>Error loading models</option>";
         hideLoader();
     }
 });
