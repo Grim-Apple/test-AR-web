@@ -64,6 +64,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         hideLoader();
     });
 
+    // Handle model loading errors
+    viewer.addEventListener('error', (error) => {
+        console.error("Model viewer error:", error);
+        hideLoader();
+        menuContainer.innerHTML += `<p style='color: #ff4444; padding: 10px; font-size: 0.8rem;'>Error loading 3D model. Please check the file path.</p>`;
+    });
+
     try {
         const response = await fetch("module/models.json");
         if (!response.ok) {
